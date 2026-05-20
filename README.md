@@ -1,72 +1,23 @@
 # Smart Event Booking System
 
-A premium full-stack MERN-based Event Booking Platform with dynamic event management, booking system, admin dashboard, responsive UI, and MySQL integration.
-
----
+Full-stack event booking app with a React frontend, Node/Express API, and MySQL database. It includes event browsing, event details, ticket booking, and a simple admin dashboard for managing events and viewing bookings.
 
 ## Features
 
-### User Features
-- Browse Events
-- Dynamic Event Details
-- Book Tickets
-- Responsive Mobile UI
-- Premium Animated Interface
-
-### Admin Features
-- Admin Login
-- Add Events
-- View Bookings
-- Dashboard Analytics
-
----
+- Browse and filter events
+- View event details with pricing and map embed
+- Book tickets with live total calculation
+- Admin dashboard for add, edit, and delete actions
+- MySQL-backed events and bookings
 
 ## Tech Stack
 
-### Frontend
-- React.js
-- Tailwind CSS
-- Framer Motion
-- Axios
-- React Router DOM
+- Frontend: React, Vite, Tailwind CSS, Framer Motion, Axios, React Router DOM
+- Backend: Node.js, Express, MySQL, Socket.IO
 
-### Backend
-- Node.js
-- Express.js
+## Setup
 
-### Database
-- MySQL
-
----
-
-## Project Structure
-
-smart_event_booking_system
-│
-├── client
-│ ├── src
-│ ├── components
-│ ├── pages
-│ └── utils
-│
-├── server
-│ ├── config
-│ ├── controllers
-│ ├── routes
-│ └── server.js
-
----
-
-## Installation
-
-### Clone Repository
-
-```bash
-git clone <your-repository-url>
-cd smart_event_booking_system
-```
-
-### Install Dependencies
+### 1. Install dependencies
 
 ```bash
 cd server
@@ -76,35 +27,45 @@ cd ..\client
 npm install
 ```
 
-### Run Project
+### 2. Configure the backend
+
+Set MySQL credentials in `server/config/db.js`, or create a `.env` file in `server` with:
+
+```env
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=
+MYSQL_DATABASE=smart_event_booking
+```
+
+### 3. Configure the frontend
+
+Create `client/.env` if you want to point to a different API host:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000
+```
+
+If you do not set this variable, the app uses `http://localhost:5000`.
+
+### 4. Run the project
 
 ```bash
-# Start backend
+# backend
 cd server
-node server.js
+npm run dev
 
-# Start frontend
+# frontend
 cd ..\client
 npm run dev -- --host
 ```
 
-### Database Setup
+## Database
 
-- Create the MySQL database named `smart_event_booking`.
-- Make sure the `events` and `bookings` tables exist.
-- Update the database credentials in `server/config/db.js` if needed.
+Import `server/event_booking.sql` into MySQL to create or update the required tables.
 
-### Database Migration Queries
+## Notes
 
-Run these once to add the new event and booking fields without deleting data:
-
-```sql
-ALTER TABLE events
-	ADD COLUMN location VARCHAR(255) NULL,
-	ADD COLUMN vip_price DECIMAL(10,2) NULL DEFAULT 0,
-	ADD COLUMN standard_price DECIMAL(10,2) NULL DEFAULT 0;
-
-ALTER TABLE bookings
-	ADD COLUMN ticket_category VARCHAR(20) NULL DEFAULT 'standard',
-	ADD COLUMN total_amount DECIMAL(10,2) NULL DEFAULT 0;
-```
+- Admin login is currently a simple client-side demo login.
+- The backend exposes event and booking APIs for the frontend.
+- If you deploy the app, set `VITE_API_BASE_URL` to your live backend URL.

@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://192.168.1.3:5000";
+import { API_BASE_URL } from "../config/api";
 
 const EventDetails = () => {
 

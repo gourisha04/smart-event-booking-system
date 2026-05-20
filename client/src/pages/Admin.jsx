@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://192.168.1.3:5000";
+import { API_BASE_URL } from "../config/api";
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -30,13 +29,6 @@ const Admin = () => {
     total_seats: "",
   });
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchEvents();
-      fetchBookings();
-    }
-  }, [isAuthenticated]);
-
   const handleLoginChange = (e) => {
     setLoginForm({
       ...loginForm,
@@ -47,13 +39,13 @@ const Admin = () => {
   const handleLoginSubmit = (e) => {
     e.preventDefault();
 
-    if (loginForm.username === "admin" && loginForm.password === "admin123") {
+    if (loginForm.username.trim() && loginForm.password.trim()) {
       localStorage.setItem("adminAuthenticated", "true");
       setIsAuthenticated(true);
       setLoginError("");
       setLoginForm({ username: "", password: "" });
     } else {
-      setLoginError("Invalid admin credentials.");
+      setLoginError("Enter any demo credentials to access the dashboard.");
     }
   };
 
@@ -71,10 +63,21 @@ const Admin = () => {
     setEvents(res.data);
   };
 
-  const fetchBookings = async () => {
-    const res = await axios.get(`${API_BASE_URL}/api/bookings`);
-    setBookings(res.data);
-  };
+  useEffect(() => {
+    if (isAuthenticated) {
+      const loadDashboardData = async () => {
+        const [eventsRes, bookingsRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/events`),
+          axios.get(`${API_BASE_URL}/api/bookings`),
+        ]);
+
+        setEvents(eventsRes.data);
+        setBookings(bookingsRes.data);
+      };
+
+      void loadDashboardData();
+    }
+  }, [isAuthenticated]);
 
   const resetEventForm = () => {
     setFormData({

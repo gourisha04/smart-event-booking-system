@@ -6,36 +6,49 @@ import Reveal from "../components/Reveal";
 import ParallaxSection from "../components/ParallaxSection";
 import StatsSection from "../components/StatsSection";
 import Footer from "../components/Footer";
+import { API_BASE_URL } from "../config/api";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://192.168.1.3:5000";
-
 const Home = () => {
 
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/api/events`)
       .then((res) => {
         setEvents(res.data);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setError("Unable to load events right now.");
+        setLoading(false);
       });
   }, []);
 
-  if (!events.length) {
+  if (loading) {
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl">
       Loading Events...
     </div>
   );
 }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-center px-6 text-2xl text-red-400">
+        {error}
+      </div>
+    );
+  }
+
   return (
-<div className="bg-black min-h-screen pt-24">
+    <div className="bg-black min-h-screen pt-24">
       <Navbar />
 
       <Hero />
@@ -50,22 +63,28 @@ const Home = () => {
           </h2>
         </Reveal>
 
-        <Reveal>
-          <div className="grid md:grid-cols-3 gap-8">
+        {events.length > 0 ? (
+          <Reveal>
+            <div className="grid md:grid-cols-3 gap-8">
 
-            {events.map((event) => (
-              <EventCard
-                key={event.id}
-                id={event.id}
-                title={event.title}
-                date={event.date}
-                category={event.category}
-                image={event.image}
-              />
-            ))}
+              {events.map((event) => (
+                <EventCard
+                  key={event.id}
+                  id={event.id}
+                  title={event.title}
+                  date={event.date}
+                  category={event.category}
+                  image={event.image}
+                />
+              ))}
 
+            </div>
+          </Reveal>
+        ) : (
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-gray-300">
+            No events available yet.
           </div>
-        </Reveal>
+        )}
 
       </section>
 

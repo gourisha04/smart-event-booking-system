@@ -5,8 +5,7 @@ import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import EventCard from "../components/EventCard";
 import Reveal from "../components/Reveal";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://192.168.1.3:5000";
+import { API_BASE_URL } from "../config/api";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
