@@ -1,12 +1,11 @@
-require("dotenv").config();
-
 const mysql = require("mysql2");
 
 const connection = mysql.createConnection({
-  host: process.env.MYSQL_HOST || "localhost",
-  user: process.env.MYSQL_USER || "root",
-  password: process.env.MYSQL_PASSWORD || "",
-  database: process.env.MYSQL_DATABASE || "smart_event_booking",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
 });
 
 connection.connect((err) => {
