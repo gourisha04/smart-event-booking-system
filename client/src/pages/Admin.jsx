@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { API_BASE_URL } from "../config/api";
+import { fallbackBookings, fallbackEvents } from "../utils/demoData";
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -16,6 +17,7 @@ const Admin = () => {
   const [events, setEvents] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [editingEventId, setEditingEventId] = useState(null);
+  const [backendAvailable, setBackendAvailable] = useState(true);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -56,23 +58,44 @@ const Admin = () => {
     setLoginError("");
     setEvents([]);
     setBookings([]);
+    setBackendAvailable(true);
   };
 
   const fetchEvents = async () => {
-    const res = await axios.get(`${API_BASE_URL}/api/events`);
-    setEvents(res.data);
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/events`);
+      setEvents(res.data);
+      setBackendAvailable(true);
+    } catch (error) {
+      console.log(error);
+      setEvents(fallbackEvents);
+      setBackendAvailable(false);
+    }
   };
 
   useEffect(() => {
     if (isAuthenticated) {
       const loadDashboardData = async () => {
-        const [eventsRes, bookingsRes] = await Promise.all([
+        const [eventsResult, bookingsResult] = await Promise.allSettled([
           axios.get(`${API_BASE_URL}/api/events`),
           axios.get(`${API_BASE_URL}/api/bookings`),
         ]);
 
-        setEvents(eventsRes.data);
-        setBookings(bookingsRes.data);
+        if (eventsResult.status === "fulfilled") {
+          setEvents(eventsResult.value.data);
+        } else {
+          console.error(eventsResult.reason);
+          setEvents(fallbackEvents);
+          setBackendAvailable(false);
+        }
+
+        if (bookingsResult.status === "fulfilled") {
+          setBookings(bookingsResult.value.data);
+        } else {
+          console.error(bookingsResult.reason);
+          setBookings(fallbackBookings);
+          setBackendAvailable(false);
+        }
       };
 
       void loadDashboardData();
@@ -140,6 +163,11 @@ const Admin = () => {
       description: formData.description.trim(),
       location: formData.location.trim(),
     };
+
+    if (!backendAvailable) {
+      alert("Admin changes are currently unavailable.");
+      return;
+    }
 
     if (editingEventId) {
       await axios.put(`${API_BASE_URL}/api/events/${editingEventId}`, payload);
@@ -358,6 +386,7 @@ const Admin = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="submit"
+                disabled={!backendAvailable}
                 className="bg-white text-black px-8 py-4 rounded-xl font-bold"
               >
                 {editingEventId ? "Update Event" : "Add Event"}
@@ -413,6 +442,7 @@ const Admin = () => {
                     <button
                       type="button"
                       onClick={() => handleEditEvent(event)}
+                      disabled={!backendAvailable}
                       className="flex-1 bg-white text-black px-4 py-3 rounded-xl font-bold text-sm"
                     >
                       Edit
@@ -420,6 +450,7 @@ const Admin = () => {
                     <button
                       type="button"
                       onClick={() => handleDeleteEvent(event.id)}
+                      disabled={!backendAvailable}
                       className="flex-1 bg-red-500/90 text-white px-4 py-3 rounded-xl font-bold text-sm"
                     >
                       Delete

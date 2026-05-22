@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import EventCard from "../components/EventCard";
 import Reveal from "../components/Reveal";
 import { API_BASE_URL } from "../config/api";
+import { fallbackEvents } from "../utils/demoData";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -28,7 +29,8 @@ const Events = () => {
       .catch((err) => {
         if (!isMounted) return;
         console.log(err);
-        setError("Unable to load events right now.");
+        setEvents(fallbackEvents);
+        setError("");
         setLoading(false);
       });
 

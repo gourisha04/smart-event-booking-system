@@ -15,7 +15,7 @@ const EventCard = ({ id, title, date, category, image, availableSeats, totalSeat
       <div className="h-[280px] sm:h-[340px] md:h-[400px] overflow-hidden">
 
         <img
-          src={image}
+          src={image || "/default-event.svg"}
           alt={title}
           className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
         />

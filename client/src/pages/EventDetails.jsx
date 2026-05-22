@@ -4,6 +4,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { API_BASE_URL } from "../config/api";
+import { getFallbackEventById } from "../utils/demoData";
 
 const EventDetails = () => {
 
@@ -19,6 +20,7 @@ const EventDetails = () => {
       })
       .catch((err) => {
         console.log(err);
+        setEvent(getFallbackEventById(id));
       });
   }, [id]);
 

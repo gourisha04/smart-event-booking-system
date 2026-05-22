@@ -7,6 +7,7 @@ import ParallaxSection from "../components/ParallaxSection";
 import StatsSection from "../components/StatsSection";
 import Footer from "../components/Footer";
 import { API_BASE_URL } from "../config/api";
+import { fallbackEvents } from "../utils/demoData";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -26,7 +27,8 @@ const Home = () => {
       })
       .catch((err) => {
         console.log(err);
-        setError("Unable to load events right now.");
+        setEvents(fallbackEvents);
+        setError("");
         setLoading(false);
       });
   }, []);
@@ -74,7 +76,7 @@ const Home = () => {
                   title={event.title}
                   date={event.date}
                   category={event.category}
-                  image={event.image}
+                  image={event.image || event.img}
                 />
               ))}
 

@@ -1,0 +1,34 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "title": "City Lights Music Fest",
+      "category": "Concert",
+      "date": "2026-06-12",
+      "image": "/default-event.svg",
+      "img": "/default-event.svg",
+      "description": "An open-air night concert featuring live bands, food stalls, and a rooftop after-party.",
+      "location": "Mumbai, India",
+      "vip_price": 2499,
+      "standard_price": 999,
+      "total_seats": 150,
+      "available_seats": 150
+    }
+  ],
+  "bookings": [
+    {
+      "id": 1,
+      "event_id": 1,
+      "name": "Gourisha Rathore",
+      "email": "gourisharathore@gmail.com",
+      "mobile": "879657890",
+      "tickets": 1,
+      "ticket_category": "standard",
+      "total_amount": 999,
+      "booking_date": "2026-05-22T04:57:11.320Z",
+      "status": "confirmed"
+    }
+  ],
+  "eventId": 2,
+  "bookingId": 2
+}
