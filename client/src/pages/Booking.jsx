@@ -11,7 +11,6 @@ const Booking = () => {
 
   const [event, setEvent] = useState(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [backendAvailable, setBackendAvailable] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -26,12 +25,10 @@ const Booking = () => {
       .get(`${API_BASE_URL}/api/events/${id}`)
       .then((res) => {
         setEvent(res.data);
-        setBackendAvailable(true);
       })
       .catch((error) => {
         console.log(error);
         setEvent(getFallbackEventById(id));
-        setBackendAvailable(false);
       });
   }, [id]);
 
@@ -55,11 +52,6 @@ const Booking = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!backendAvailable) {
-      alert("Booking is currently unavailable.");
-      return;
-    }
 
     if (!formData.name.trim() || !formData.email.trim() || Number(formData.tickets) <= 0) {
       alert("Please fill all required fields with a valid ticket quantity.");
@@ -91,7 +83,6 @@ const Booking = () => {
 
     } catch (error) {
       console.log(error);
-      setBackendAvailable(false);
       alert("Booking is currently unavailable.");
     }
   };
@@ -210,10 +201,9 @@ const Booking = () => {
 
             <button
               type="submit"
-              disabled={!backendAvailable}
-              className="w-full bg-white text-black py-4 rounded-xl font-bold text-lg disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full bg-white text-black py-4 rounded-xl font-bold text-lg"
             >
-              {backendAvailable ? "Confirm Booking" : "Booking Unavailable"}
+              Confirm Booking
             </button>
 
           </motion.form>
