@@ -1,4 +1,10 @@
-const db = require("../config/db");
+const {
+  getEvents: readEvents,
+  getEventById,
+  createEvent: insertEvent,
+  updateEvent: updateEventById,
+  deleteEvent: removeEvent,
+} = require("../utils/mockDb");
 
 const parseNumber = (value) => {
   const parsedValue = Number(value);
@@ -20,29 +26,12 @@ const hasRequiredEventFields = (body) => {
 };
 
 const getEvents = (req, res) => {
-  const query = "SELECT * FROM events";
-
-  db.query(query, (err, result) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      res.status(200).json(result);
-    }
-  });
+  res.status(200).json(readEvents());
 };
 
 const getSingleEvent = (req, res) => {
   const { id } = req.params;
-
-  const query = "SELECT * FROM events WHERE id = ?";
-
-  db.query(query, [id], (err, result) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      res.status(200).json(result[0]);
-    }
-  });
+  res.status(200).json(getEventById(id));
 };
 
 const createEvent = (req, res) => {
@@ -56,63 +45,31 @@ const createEvent = (req, res) => {
   const parsedStandardPrice = parseNumber(standard_price);
   const parsedTotalSeats = parseNumber(total_seats);
   const parsedAvailableSeats = parseNumber(available_seats);
+  const eventImage = (image || img || "").trim();
   const totalSeatsValue = parsedTotalSeats ?? parsedAvailableSeats ?? 100;
   const availableSeatsValue = parsedAvailableSeats ?? totalSeatsValue;
-  const eventImage = (image || img || "").trim();
 
   if (!eventImage) {
     return res.status(400).json({ message: "Image is required." });
   }
 
-  const query =
-    "INSERT INTO events (title, category, date, image, description, location, vip_price, standard_price, total_seats, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const createdEvent = insertEvent({
+    title: title.trim(),
+    category: category.trim(),
+    date,
+    image: eventImage,
+    description: description.trim(),
+    location: location ? location.trim() : "",
+    vip_price: parsedVipPrice,
+    standard_price: parsedStandardPrice,
+    total_seats: totalSeatsValue,
+    available_seats: availableSeatsValue,
+  });
 
-  db.query(
-    query,
-    [
-      title.trim(),
-      category.trim(),
-      date,
-      eventImage,
-      description.trim(),
-      location ? location.trim() : "",
-      parsedVipPrice,
-      parsedStandardPrice,
-      totalSeatsValue,
-      availableSeatsValue,
-    ],
-    (err, result) => {
-      if (err) {
-        if (err.errno === 1054) {
-          const fallbackQuery =
-            "INSERT INTO events (title, category, date, image, description) VALUES (?, ?, ?, ?, ?)";
-
-          db.query(
-            fallbackQuery,
-            [title.trim(), category.trim(), date, eventImage, description.trim()],
-            (fallbackErr, fallbackResult) => {
-              if (fallbackErr) {
-                res.status(500).json(fallbackErr);
-              } else {
-                res.status(201).json({
-                  message: "Event created successfully",
-                  eventId: fallbackResult.insertId,
-                });
-              }
-            }
-          );
-          return;
-        }
-
-        res.status(500).json(err);
-      } else {
-        res.status(201).json({
-          message: "Event created successfully",
-          eventId: result.insertId,
-        });
-      }
-    }
-  );
+  res.status(201).json({
+    message: "Event created successfully",
+    eventId: createdEvent.id,
+  });
 };
 
 const updateEvent = (req, res) => {
@@ -127,80 +84,46 @@ const updateEvent = (req, res) => {
   const parsedStandardPrice = parseNumber(standard_price);
   const parsedTotalSeats = parseNumber(total_seats);
   const parsedAvailableSeats = parseNumber(available_seats);
-  const totalSeatsValue = parsedTotalSeats ?? parsedAvailableSeats ?? 100;
-  const availableSeatsValue = parsedAvailableSeats ?? totalSeatsValue;
   const eventImage = (image || img || "").trim();
 
   if (!eventImage) {
     return res.status(400).json({ message: "Image is required." });
   }
 
-  const query =
-    "UPDATE events SET title = ?, category = ?, date = ?, image = ?, description = ?, location = ?, vip_price = ?, standard_price = ?, total_seats = ?, available_seats = ? WHERE id = ?";
+  const updatedEvent = updateEventById(id, {
+    title: title.trim(),
+    category: category.trim(),
+    date,
+    image: eventImage,
+    description: description.trim(),
+    location: location ? location.trim() : "",
+    vip_price: parsedVipPrice,
+    standard_price: parsedStandardPrice,
+    total_seats: Number.isFinite(parsedTotalSeats) ? parsedTotalSeats : undefined,
+    available_seats: Number.isFinite(parsedAvailableSeats) ? parsedAvailableSeats : undefined,
+  });
 
-  db.query(
-    query,
-    [
-      title.trim(),
-      category.trim(),
-      date,
-      eventImage,
-      description.trim(),
-      location ? location.trim() : "",
-      parsedVipPrice,
-      parsedStandardPrice,
-      totalSeatsValue,
-      availableSeatsValue,
-      id,
-    ],
-    (err, result) => {
-      if (err) {
-        if (err.errno === 1054) {
-          const fallbackQuery =
-            "UPDATE events SET title = ?, category = ?, date = ?, image = ?, description = ? WHERE id = ?";
+  if (!updatedEvent) {
+    return res.status(200).json({
+      message: "Event updated successfully",
+      affectedRows: 0,
+    });
+  }
 
-          db.query(
-            fallbackQuery,
-            [title.trim(), category.trim(), date, eventImage, description.trim(), id],
-            (fallbackErr, fallbackResult) => {
-              if (fallbackErr) {
-                res.status(500).json(fallbackErr);
-              } else {
-                res.status(200).json({
-                  message: "Event updated successfully",
-                  affectedRows: fallbackResult.affectedRows,
-                });
-              }
-            }
-          );
-          return;
-        }
-
-        res.status(500).json(err);
-      } else {
-        res.status(200).json({
-          message: "Event updated successfully",
-          affectedRows: result.affectedRows,
-        });
-      }
-    }
-  );
+  res.status(200).json({
+    message: "Event updated successfully",
+    affectedRows: 1,
+  });
 };
 
 const deleteEvent = (req, res) => {
   const { id } = req.params;
 
-  const query = "DELETE FROM events WHERE id = ?";
+  const affectedRows = removeEvent(id);
 
-  db.query(query, [id], (err, result) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      res.status(200).json({
-        message: "Event deleted successfully",
-        affectedRows: result.affectedRows,
-      });
-    }
+  res.status(200).json({
+    message: "Event deleted successfully",
+    affectedRows,
   });
 };
 

@@ -1,4 +1,7 @@
-const db = require("../config/db");
+const {
+  getBookings: readBookings,
+  createBooking: insertBooking,
+} = require("../utils/mockDb");
 
 const parseNumber = (value) => {
   const parsedValue = Number(value);
@@ -23,58 +26,28 @@ const createBooking = (req, res) => {
   }
 
   const parsedTotalAmount = parseNumber(total_amount);
+  const bookingResult = insertBooking({
+    event_id,
+    name: name.trim(),
+    email: email.trim(),
+    mobile: mobile.trim(),
+    tickets,
+    ticket_category,
+    total_amount: parsedTotalAmount,
+  });
 
-  const query =
-    "INSERT INTO bookings (event_id, name, email, mobile, tickets, ticket_category, total_amount, booking_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'confirmed')";
+  if (bookingResult.error) {
+    return res.status(bookingResult.error.status).json({ message: bookingResult.error.message });
+  }
 
-  db.query(
-    query,
-    [event_id, name.trim(), email.trim(), mobile.trim(), tickets, ticket_category, parsedTotalAmount],
-    (err, result) => {
-      if (err) {
-        if (err.errno === 1054) {
-          const fallbackQuery =
-            "INSERT INTO bookings (event_id, name, email, mobile, tickets) VALUES (?, ?, ?, ?, ?)";
-
-          db.query(
-            fallbackQuery,
-            [event_id, name.trim(), email.trim(), mobile.trim(), tickets],
-            (fallbackErr, fallbackResult) => {
-              if (fallbackErr) {
-                res.status(500).json(fallbackErr);
-              } else {
-                res.status(201).json({
-                  message: "Booking Successful",
-                  bookingId: fallbackResult.insertId,
-                });
-              }
-            }
-          );
-          return;
-        }
-
-        res.status(500).json(err);
-      } else {
-        res.status(201).json({
-          message: "Booking Successful",
-          bookingId: result.insertId,
-        });
-      }
-    }
-  );
+  res.status(201).json({
+    message: "Booking Successful",
+    bookingId: bookingResult.booking.id,
+  });
 };
 
 const getBookings = (req, res) => {
-
-  const query = "SELECT * FROM bookings";
-
-  db.query(query, (err, result) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      res.status(200).json(result);
-    }
-  });
+  res.status(200).json(readBookings());
 };
 
 module.exports = {
