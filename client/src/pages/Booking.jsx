@@ -11,6 +11,7 @@ const Booking = () => {
 
   const [event, setEvent] = useState(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingMessage, setBookingMessage] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -64,14 +65,22 @@ const Booking = () => {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/api/bookings`, {
+      const response = await axios.post(`${API_BASE_URL}/api/bookings`, {
         event_id: id,
         ticket_category: formData.ticket_category,
         total_amount: totalAmount,
         ...formData,
       });
 
+      if (response.data?.event) {
+        setEvent(response.data.event);
+      } else {
+        const refreshedEvent = await axios.get(`${API_BASE_URL}/api/events/${id}`);
+        setEvent(refreshedEvent.data);
+      }
+
       setBookingSuccess(true);
+      setBookingMessage("Your booking was confirmed and seats were updated live.");
 
       setFormData({
         name: "",
@@ -83,7 +92,7 @@ const Booking = () => {
 
     } catch (error) {
       console.log(error);
-      alert("Booking is currently unavailable.");
+      alert(error?.response?.data?.message || "Booking could not be completed.");
     }
   };
 
@@ -247,7 +256,14 @@ const Booking = () => {
             </div>
 
             <h2 className="text-3xl font-black">Booking Confirmed</h2>
-            <p className="text-gray-400 mt-4">Your ticket request has been received successfully.</p>
+            <p className="text-gray-400 mt-4">{bookingMessage || "Your ticket request has been received successfully."}</p>
+
+            {event && (
+              <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-gray-200">
+                <span className="uppercase tracking-[0.35em] text-gray-500">Seats left</span>
+                <span className="font-black text-white">{event.available_seats ?? 0}</span>
+              </div>
+            )}
           </motion.div>
         )}
         </AnimatePresence>

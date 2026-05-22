@@ -40,13 +40,18 @@ const Admin = () => {
   const handleLoginSubmit = (e) => {
     e.preventDefault();
 
-    if (loginForm.username.trim() && loginForm.password.trim()) {
+    const username = loginForm.username.trim();
+    const password = loginForm.password.trim();
+
+    if (username === "admin" && password === "admin123") {
       localStorage.setItem("adminAuthenticated", "true");
       setIsAuthenticated(true);
       setLoginError("");
       setLoginForm({ username: "", password: "" });
     } else {
-      setLoginError("Enter any demo credentials to access the dashboard.");
+      localStorage.removeItem("adminAuthenticated");
+      setIsAuthenticated(false);
+      setLoginError("Invalid credentials. Use admin / admin123.");
     }
   };
 
@@ -130,8 +135,14 @@ const Admin = () => {
     const confirmed = window.confirm("Delete this event permanently?");
     if (!confirmed) return;
 
-    await axios.delete(`${API_BASE_URL}/api/events/${eventId}`);
-    fetchEvents();
+    try {
+      await axios.delete(`${API_BASE_URL}/api/events/${eventId}`);
+      await fetchEvents();
+      alert("Event Deleted");
+    } catch (error) {
+      console.log(error);
+      alert(error?.response?.data?.message || "Failed to delete event.");
+    }
   };
 
   const handleChange = (e) => {
@@ -158,17 +169,21 @@ const Admin = () => {
       location: formData.location.trim(),
     };
 
-    if (editingEventId) {
-      await axios.put(`${API_BASE_URL}/api/events/${editingEventId}`, payload);
-      alert("Event Updated");
-    } else {
-      await axios.post(`${API_BASE_URL}/api/events`, payload);
-      alert("Event Added");
+    try {
+      if (editingEventId) {
+        await axios.put(`${API_BASE_URL}/api/events/${editingEventId}`, payload);
+        alert("Event Updated");
+      } else {
+        await axios.post(`${API_BASE_URL}/api/events`, payload);
+        alert("Event Added");
+      }
+
+      resetEventForm();
+      await fetchEvents();
+    } catch (error) {
+      console.log(error);
+      alert(error?.response?.data?.message || "Failed to save event.");
     }
-
-    resetEventForm();
-
-    fetchEvents();
   };
 
   if (!isAuthenticated) {

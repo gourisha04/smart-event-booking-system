@@ -43,6 +43,7 @@ const createBooking = (req, res) => {
   res.status(201).json({
     message: "Booking Successful",
     bookingId: bookingResult.booking.id,
+    event: bookingResult.event,
   });
 };
 
