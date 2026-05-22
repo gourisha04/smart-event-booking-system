@@ -5,14 +5,84 @@
       "title": "City Lights Music Fest",
       "category": "Concert",
       "date": "2026-06-12",
-      "image": "/default-event.svg",
-      "img": "/default-event.svg",
-      "description": "An open-air night concert featuring live bands, food stalls, and a rooftop after-party.",
+      "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f",
+      "img": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f",
+      "description": "An open-air night concert featuring live bands, DJs, food stalls, and rooftop after-party experiences.",
       "location": "Mumbai, India",
       "vip_price": 2499,
       "standard_price": 999,
       "total_seats": 150,
       "available_seats": 150
+    },
+    {
+      "id": 2,
+      "title": "Future Tech Summit",
+      "category": "Technology",
+      "date": "2026-07-04",
+      "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87",
+      "img": "https://images.unsplash.com/photo-1540575467063-178a50c2df87",
+      "description": "A global conference focused on AI, robotics, startups, and the future of digital innovation.",
+      "location": "Bangalore, India",
+      "vip_price": 4999,
+      "standard_price": 1999,
+      "total_seats": 300,
+      "available_seats": 300
+    },
+    {
+      "id": 3,
+      "title": "Startup Connect Meetup",
+      "category": "Business",
+      "date": "2026-08-18",
+      "image": "https://images.unsplash.com/photo-1511578314322-379afb476865",
+      "img": "https://images.unsplash.com/photo-1511578314322-379afb476865",
+      "description": "Networking event bringing together founders, investors, creators, and entrepreneurs.",
+      "location": "Delhi, India",
+      "vip_price": 1999,
+      "standard_price": 799,
+      "total_seats": 200,
+      "available_seats": 200
+    },
+    {
+      "id": 4,
+      "title": "Neon Fashion Week",
+      "category": "Fashion",
+      "date": "2026-09-02",
+      "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+      "img": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+      "description": "Luxury fashion showcase with celebrity designers and immersive runway experiences.",
+      "location": "Paris, France",
+      "vip_price": 6999,
+      "standard_price": 2999,
+      "total_seats": 120,
+      "available_seats": 120
+    },
+    {
+      "id": 5,
+      "title": "Gaming Universe Expo",
+      "category": "Gaming",
+      "date": "2026-10-11",
+      "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420",
+      "img": "https://images.unsplash.com/photo-1511512578047-dfb367046420",
+      "description": "Massive gaming event featuring esports tournaments, VR zones, and gaming creators.",
+      "location": "Tokyo, Japan",
+      "vip_price": 3499,
+      "standard_price": 1499,
+      "total_seats": 500,
+      "available_seats": 500
+    },
+    {
+      "id": 6,
+      "title": "Global Food Carnival",
+      "category": "Food Festival",
+      "date": "2026-11-20",
+      "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0",
+      "img": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0",
+      "description": "International food celebration with chefs, live cooking shows, and cultural performances.",
+      "location": "Dubai, UAE",
+      "vip_price": 2999,
+      "standard_price": 999,
+      "total_seats": 350,
+      "available_seats": 350
     }
   ],
   "bookings": [
@@ -29,6 +99,6 @@
       "status": "confirmed"
     }
   ],
-  "eventId": 2,
+  "eventId": 7,
   "bookingId": 2
 }
